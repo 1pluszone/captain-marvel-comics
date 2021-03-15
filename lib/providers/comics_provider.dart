@@ -20,7 +20,6 @@ class ComicsProvider with ChangeNotifier {
     for (Results result in captainMarvel.data.results) {
       comicsList.add(result);
     }
-
     notifyListeners();
   }
 }

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marvel_comics/providers/comics_provider.dart';
+import 'package:marvel_comics/view/widgets/comics_widget.dart';
 import 'package:marvel_comics/view/widgets/sliding_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:after_layout/after_layout.dart';
 
+import 'widgets/home_widget.dart';
 import 'widgets/skewCut_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,16 +17,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AfterLayoutMixin<HomePage>, SingleTickerProviderStateMixin {
-  final String homeImageUrl =
-      "https://terrigen-cdn-dev.marvel.com/content/prod/1x/008cmv_ons_mas_mob_02.jpg";
-
-  final String text1 = "CAROL DANVERS";
-
-  final String text2 = "CAPTAIN MARVEL";
-
-  final String text3 =
-      "Carol Danvers becomes one of the univere's most powerful heroes when Earth is caught in the middle of a galactic war between two alien races.";
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -36,8 +28,6 @@ class _HomePageState extends State<HomePage>
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   List<Widget> _widgetOptions = <Widget>[];
-  final _comicsPageController = ScrollController();
-  final _homePageController = ScrollController();
 
   AnimationController _controller;
   bool _visible = true;
@@ -46,8 +36,8 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _widgetOptions = <Widget>[
-      homeWidgets(),
-      comics(),
+      HomeWidget(),
+      ComicsWidget(),
       Text(
         'Index 2: School',
         style: optionStyle,
@@ -63,36 +53,7 @@ class _HomePageState extends State<HomePage>
   @override
   void afterFirstLayout(BuildContext context) {
     provider.getCaptainMarvelComics();
-
-    print("yello");
-    _comicsPageController.addListener(() {
-      if (_comicsPageController.position.pixels ==
-          _comicsPageController.position.maxScrollExtent) {
-        provider.getCaptainMarvelComics();
-      }
-      _comicsPageController.addListener(() {
-        if (_comicsPageController.position.pixels ==
-            _comicsPageController.position.minScrollExtent) {
-          //showFullLogo();
-        } else if (_comicsPageController.position.userScrollDirection ==
-            ScrollDirection.reverse) {
-          setState(() {
-            _visible = false;
-          });
-          //showMLogo();
-        } else if (_comicsPageController.position.userScrollDirection ==
-            ScrollDirection.forward) {
-          setState(() {
-            _visible = true;
-          });
-          //hideLogo();
-        }
-      });
-    });
   }
-
-  //showFullLogo();
-  final items = List<String>.generate(10000, (i) => "Item $i");
 
   @override
   Widget build(BuildContext context) {
@@ -101,66 +62,18 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       appBar: SlidingAppBar(
         controller: _controller,
-        visible: _visible,
-        child: AppBar(
-          title: SvgPicture.asset("asset/images/marvel.svg"),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {},
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
-            ),
-          ],
-        ),
+        //visible: _visible,
+        //child: AppBar(
+        // title: SvgPicture.asset("asset/images/marvel.svg"),
+        //centerTitle: true,
+        //leading: menuwidget(),
+        //actions: [
+        //  searchWidget(),
+        // ],
+        //),
       ),
       bottomNavigationBar: bottomNavigation(),
       body: _widgetOptions.elementAt(_selectedIndex),
-    );
-  }
-
-  Widget homeWidgets() {
-    return SingleChildScrollView(
-      controller: _homePageController,
-      child: Column(
-        children: [
-          homeImage(),
-          homeDescription(),
-          followPane(),
-          Divider(),
-        ],
-      ),
-    );
-  }
-
-  Widget comics() {
-    // return Consumer<ComicsProvider>(
-    //   builder: (context, providers, child) => ListView.builder(
-    //     itemCount: providers.comicList.length + 1,
-    //     controller: _comicsPageController,
-    //     itemBuilder: (BuildContext context, int index) {
-    //       if (index == providers.comicsList.length) {
-    //         return Center(child: CircularProgressIndicator());
-    //       }
-    //       return ListTile(
-    //         leading: Text("$index"),
-    //         title: Text(providers.comicsList[index].title),
-    //       );
-    //     },
-    //   ),
-    // );
-
-    return ListView.builder(
-      itemCount: items.length,
-      controller: _comicsPageController,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text('${items[index]}'),
-        );
-      },
     );
   }
 
@@ -186,58 +99,9 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Widget homeImage() {
-    return Image.network(homeImageUrl);
-  }
-
-  Widget homeDescription() {
-    return ClipPath(
-      clipper: SkewCut(),
-      child: Container(
-        height: 150,
-        color: Colors.black,
-        child: Column(
-          children: <Widget>[
-            Text(
-              text1,
-              style: style,
-            ),
-            Text(
-              text2,
-              style: style,
-            ),
-            Text(
-              text3,
-              style: style,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  TextStyle style = TextStyle(color: Colors.white);
-
-  Widget followPane() {
-    return Row(
-      children: [
-        Text("Follow"),
-        Spacer(),
-        IconButton(
-          icon: Icon(Icons.face),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: Icon(Icons.twenty_three_mp),
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
-
   @override
   void dispose() {
-    _comicsPageController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 }
