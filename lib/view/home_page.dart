@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:marvel_comics/providers/comics_provider.dart';
+import 'package:marvel_comics/view/widgets/sliding_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:after_layout/after_layout.dart';
 
@@ -11,7 +13,8 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AfterLayoutMixin<HomePage>, SingleTickerProviderStateMixin {
   final String homeImageUrl =
       "https://terrigen-cdn-dev.marvel.com/content/prod/1x/008cmv_ons_mas_mob_02.jpg";
 
@@ -33,7 +36,11 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   List<Widget> _widgetOptions = <Widget>[];
-  ScrollController _sc = ScrollController();
+  final _comicsPageController = ScrollController();
+  final _homePageController = ScrollController();
+
+  AnimationController _controller;
+  bool _visible = true;
 
   @override
   void initState() {
@@ -46,6 +53,11 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
         style: optionStyle,
       ),
     ];
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 400),
+    );
   }
 
   @override
@@ -53,31 +65,57 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
     provider.getCaptainMarvelComics();
 
     print("yello");
-    _sc.addListener(() {
-      if (_sc.position.pixels == _sc.position.maxScrollExtent) {
+    _comicsPageController.addListener(() {
+      if (_comicsPageController.position.pixels ==
+          _comicsPageController.position.maxScrollExtent) {
         provider.getCaptainMarvelComics();
       }
+      _comicsPageController.addListener(() {
+        if (_comicsPageController.position.pixels ==
+            _comicsPageController.position.minScrollExtent) {
+          //showFullLogo();
+        } else if (_comicsPageController.position.userScrollDirection ==
+            ScrollDirection.reverse) {
+          setState(() {
+            _visible = false;
+          });
+          //showMLogo();
+        } else if (_comicsPageController.position.userScrollDirection ==
+            ScrollDirection.forward) {
+          setState(() {
+            _visible = true;
+          });
+          //hideLogo();
+        }
+      });
     });
   }
+
+  //showFullLogo();
+  final items = List<String>.generate(10000, (i) => "Item $i");
 
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<ComicsProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: SvgPicture.asset("asset/images/marvel.svg"),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
+      appBar: SlidingAppBar(
+        controller: _controller,
+        visible: _visible,
+        child: AppBar(
+          title: SvgPicture.asset("asset/images/marvel.svg"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.menu),
             onPressed: () {},
           ),
-        ],
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {},
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: bottomNavigation(),
       body: _widgetOptions.elementAt(_selectedIndex),
@@ -86,6 +124,7 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
 
   Widget homeWidgets() {
     return SingleChildScrollView(
+      controller: _homePageController,
       child: Column(
         children: [
           homeImage(),
@@ -98,20 +137,30 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
   }
 
   Widget comics() {
-    return Consumer<ComicsProvider>(
-      builder: (context, providers, child) => ListView.builder(
-        itemCount: providers.comicList.length + 1,
-        controller: _sc,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == providers.comicsList.length) {
-            return CircularProgressIndicator();
-          }
-          return ListTile(
-            leading: Text("$index"),
-            title: Text(providers.comicsList[index].title),
-          );
-        },
-      ),
+    // return Consumer<ComicsProvider>(
+    //   builder: (context, providers, child) => ListView.builder(
+    //     itemCount: providers.comicList.length + 1,
+    //     controller: _comicsPageController,
+    //     itemBuilder: (BuildContext context, int index) {
+    //       if (index == providers.comicsList.length) {
+    //         return Center(child: CircularProgressIndicator());
+    //       }
+    //       return ListTile(
+    //         leading: Text("$index"),
+    //         title: Text(providers.comicsList[index].title),
+    //       );
+    //     },
+    //   ),
+    // );
+
+    return ListView.builder(
+      itemCount: items.length,
+      controller: _comicsPageController,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text('${items[index]}'),
+        );
+      },
     );
   }
 
@@ -188,6 +237,7 @@ class _HomePageState extends State<HomePage> with AfterLayoutMixin<HomePage> {
 
   @override
   void dispose() {
+    _comicsPageController.dispose();
     super.dispose();
   }
 }
