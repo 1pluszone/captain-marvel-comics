@@ -4,16 +4,15 @@ import 'package:marvel_comics/providers/animation_provider.dart';
 import 'package:marvel_comics/providers/comics_provider.dart';
 import 'package:provider/provider.dart';
 
-class SlidingAppBar extends PreferredSize {
-//class SlidingAppBar {
+class SlidingAppBar extends StatefulWidget {
   final AnimationController controller;
   // final bool visible;
 
   //  @override
   //  final PreferredSizeWidget child;
 
-  //  @override
-  //  Size get preferredSize => child.preferredSize;
+  @override
+  Size get preferredSize => appBar().preferredSize;
 
   SlidingAppBar({@required this.controller}) : super();
 
@@ -24,14 +23,23 @@ class SlidingAppBar extends PreferredSize {
     provider = Provider.of<AnimationProvider>(context);
 
     if (provider.appBarStatus == AppBarStatus.hidden) {
+      mLogo = SvgPicture.asset("asset/images/m.svg");
       controller.reverse();
       return appBarWidget();
     } else if (provider.appBarStatus == AppBarStatus.showM) {
+      mLogo = SvgPicture.asset("asset/images/m.svg");
+
       controller.forward();
       return appBarWidget();
     } else {
+      mLogo = SvgPicture.asset("asset/images/m.svg");
+      Future.delayed(Duration(seconds: 2), () {
+        mLogo = SvgPicture.asset("asset/images/marvel.svg");
+
+        return animatedAppBar();
+      });
       //AppBarStatus.showMarvel
-      return SizedBox();
+      // return appBarWidget();
     }
   }
 
@@ -40,14 +48,7 @@ class SlidingAppBar extends PreferredSize {
       position: Tween<Offset>(begin: Offset.zero, end: Offset(0, -1)).animate(
         CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn),
       ),
-      child: AppBar(
-        title: SvgPicture.asset("asset/images/marvel.svg"),
-        centerTitle: true,
-        leading: menuwidget(),
-        actions: [
-          searchWidget(),
-        ],
-      ),
+      child: appBar(),
     );
   }
 
@@ -63,5 +64,38 @@ class SlidingAppBar extends PreferredSize {
       icon: Icon(Icons.search),
       onPressed: () {},
     );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: mLogo,
+      centerTitle: true,
+      leading: menuwidget(),
+      actions: [
+        searchWidget(),
+      ],
+    );
+  }
+
+  AppBar animatedAppBar() {
+    return AppBar(
+      title: AnimatedSwitcher(
+          duration: (Duration(milliseconds: 10000)), child: mLogo),
+      centerTitle: true,
+      leading: menuwidget(),
+      actions: [
+        searchWidget(),
+      ],
+    );
+  }
+
+  Widget mLogo;
+  // final mLogo = SvgPicture.asset("asset/images/m.svg");
+  final marvelLogo = SvgPicture.asset("asset/images/marvel.svg");
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }
