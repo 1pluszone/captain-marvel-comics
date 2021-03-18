@@ -1,9 +1,10 @@
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+//import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:marvel_comics/providers/animation_provider.dart';
 import 'package:marvel_comics/providers/comics_provider.dart';
+import 'package:marvel_comics/view/widgets/each_comic.dart';
 import 'package:provider/provider.dart';
 
 class ComicsWidget extends StatefulWidget {
@@ -33,9 +34,19 @@ class _ComicsWidgetState extends State<ComicsWidget>
             }
             String url =
                 "${providers.comicsList[index].images[0].path}.${providers.comicsList[index].images[0].extension}";
+            Widget comicImage = Image.network(url);
             return ListTile(
-              title: Image.network(url),
+              title: comicImage,
               subtitle: Text(providers.comicList[index].title),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EachComic(
+                    comicImage: comicImage,
+                    eachComic: providers.comicList[index],
+                  ),
+                ),
+              ),
             );
           }),
 
@@ -70,7 +81,7 @@ class _ComicsWidgetState extends State<ComicsWidget>
     );
   }
 
-  final items = List<String>.generate(10000, (i) => "Item $i");
+  // final items = List<String>.generate(10000, (i) => "Item $i");
 
   @override
   void afterFirstLayout(BuildContext context) {

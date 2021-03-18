@@ -9,9 +9,14 @@ class ComicsProvider with ChangeNotifier {
 
   List<Results> comicsList = [];
 
+  List captainMarvelOnly = [];
+
   List<Results> get comicList => comicsList;
 
-  void getCaptainMarvelComics() async {
+  List get captainMarvelsOnly => captainMarvelOnly;
+
+  Future<void> getCaptainMarvelComics() async {
+    //rename to captainmarvelappearance
     print(comicsList.length);
     final response = await ApiCalls().getComics(comicsList.length);
     final responseData = json.decode(response.body);
@@ -21,5 +26,11 @@ class ComicsProvider with ChangeNotifier {
       comicsList.add(result);
     }
     notifyListeners();
+  }
+
+  Future<void> getCaptainMarvelComicsOnly() async {
+    final response = await ApiCalls().getCaptainMarvelComics();
+    final responseData = json.decode(response.body);
+    print(responseData);
   }
 }

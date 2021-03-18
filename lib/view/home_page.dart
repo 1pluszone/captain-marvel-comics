@@ -55,6 +55,7 @@ class _HomePageState extends State<HomePage>
   @override
   void afterFirstLayout(BuildContext context) {
     provider.getCaptainMarvelComics();
+    provider.getCaptainMarvelComicsOnly();
   }
 
   Widget mLogo;
