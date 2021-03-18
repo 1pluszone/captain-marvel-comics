@@ -33,17 +33,36 @@ class _ComicsWidgetState extends State<ComicsWidget>
               return Center(child: CircularProgressIndicator());
             }
             String url =
-                "${providers.comicsList[index].images[0].path}.${providers.comicsList[index].images[0].extension}";
-            Widget comicImage = Image.network(url);
-            return ListTile(
-              title: comicImage,
-              subtitle: Text(providers.comicList[index].title),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EachComic(
-                    comicImage: comicImage,
-                    eachComic: providers.comicList[index],
+                "${providers.comicsList[index].thumbnail.path}.${providers.comicsList[index].thumbnail.extension}";
+            Widget comicImage = Image.network(
+              url,
+              height: 200,
+            );
+            NetworkImage networkImage = NetworkImage(url);
+            return Card(
+              elevation: 10,
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: networkImage,
+                ),
+                title: Text(
+                  providers.comicList[index].title,
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600),
+                ),
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.redAccent,
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EachComic(
+                      comicImage: comicImage,
+                      eachComic: providers.comicList[index],
+                    ),
                   ),
                 ),
               ),
