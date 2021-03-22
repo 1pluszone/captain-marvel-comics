@@ -12,11 +12,11 @@ It is divided into three section.
 
 3. A list of all Captain Marvel only comics.
 
-<img src="https://github.com/1pluszone/captain-marvel-comics/blob/dev/screenshots/homePage.png" height="350">
+<img src="https://github.com/1pluszone/captain-marvel-comics/blob/main/screenshots/homePage.png" height="350">
 
-<img src="https://github.com/1pluszone/captain-marvel-comics/blob/dev/screenshots/listPage.png" height="350">
+<img src="https://github.com/1pluszone/captain-marvel-comics/blob/main/screenshots/listPage.png" height="350">
 
-<img src="https://github.com/1pluszone/captain-marvel-comics/blob/dev/screenshots/each_comic.png" height="350">
+<img src="https://github.com/1pluszone/captain-marvel-comics/blob/main/screenshots/each_comic.png" height="350">
 
 
 ## How?
