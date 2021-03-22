@@ -1,6 +1,6 @@
 class ApiKey implements MustHave {
-  String publicKey = "c002e74122d2a21cf576c369fb693cb5";
-  String privateKey = "ce6177476efab6390596869875ddbcc1c6b3135c";
+  String publicKey = "yourPublicKeyHere";
+  String privateKey = "yourPrivateKeyHere";
 }
 
 //final _apiKey = ApiKey();
