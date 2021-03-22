@@ -14,8 +14,8 @@ class ApiCalls {
   //final String charactersApi = "characters?";
   final String captainMarvelAppearance = "characters/1010338/comics?";
   final String captainMarvelComics = "characters/1010338?";
-  final String publicKey = "c002e74122d2a21cf576c369fb693cb5";
-  final privateKey = "ce6177476efab6390596869875ddbcc1c6b3135c";
+  final String publicKey = "yourPublicKeyHere";
+  final privateKey = "yourPrivateKeyHere";
 
   final String comics = "comics?characters=1010338&";
 
